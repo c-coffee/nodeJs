@@ -1,0 +1,47 @@
+/**
+ * Created by vol on 2016/12/6.
+ */
+angular.module('myModule',['ng','ngRoute','ngAnimate']).
+    controller('startCtrl',function($scope,$location){
+        $scope.detail = function(){
+            $location.path("/detail");
+        }
+    }).
+    controller('mainCtrl',function($scope){}).
+    controller('detailCtrl',function($scope){}).
+    controller('orderCtrl',function($scope){}).
+    controller('myOrderCtrl',function($scope){}).
+    config(function($routeProvider){
+    //配置路由字典
+    $routeProvider.
+    when('/start',{
+            templateUrl:'template/start.html',
+            controller:'startCtrl'
+    }).
+    when('/main',{
+        templateUrl:'template/main.html',
+        controller:'mainCtrl'
+    }).
+    when('/detail',{
+        templateUrl:'template/detail.html',
+        controller:'detailCtrl'
+    }).
+    when('/order',{
+        templateUrl:'template/order.html',
+        controller:'orderCtrl'
+    }).
+    when('/myOrder',{
+        templateUrl:'template/myOrder.html',
+        controller:'myOrderCtrl'
+    }).
+    when('/' ,{
+        templateUrl:'template/start.html',
+        controller:'startCtrl'
+    }).
+    when('',{
+        templateUrl:'template/start.html',
+        controller:'startCtrl'
+    }).otherwise({
+        redirectTo:'/start'
+    });
+});

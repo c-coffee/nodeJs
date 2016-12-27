@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理</title>
+    <link href="./css/bootstrap.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>后台管理</h1>
+        <hr>
+        <h3>创建相册</h3>
+        <form action="./createFolder" method="post">
+            相册名：<input type="text" name="txtFolderName"><br>
+            <button type="submit" class="btn btn-info">提交</button>
+        </form>
+        <hr>
+        <h3>上传图片</h3>
+        <form action="./upLoadPic" method="post" enctype="multipart/form-data">
+            选择相册：<select name="sltFolder">
+                                <option value="">请选择</option>
+                                <% for(var i=0;i<folders.length; i++){ %>
+                                    <option value="<%= folders[i] %>"><%= folders[i] %></option>
+                                <%}%>
+                            </select><br>
+            选择图片：<input type="file" name="upPic"><br>
+            <button type="submit" class="btn btn-success">上传</button>
+        </form>
+    </div>
+</body>
+</html>

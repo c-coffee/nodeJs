@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .image{
+            float:left;
+            width:250px;
+            height:250px;
+        }
+        .image img{
+            width:245px;
+            height:245px;
+            margin:auto;
+        }
+        h1{
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><%=albumName%></h1>
+        <hr>
+        <% for( var i=0; i<albumFiles.length; i++){%>
+        <div class="image">
+            <img src="./<%=albumName%>/<%=albumFiles[i]%>">
+        </div>
+        <%}%>
+    </div>
+</body>
+</html>

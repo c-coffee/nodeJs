@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-cn" ng-app="myModule">
+<head>
+    <meta charset="UTF-8">
+    <title>留言板</title>
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <!--<link rel="stylesheet" href="../public/css/bootstrap.css">-->
+    <style>
+        .msgInfo{
+            display:none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" ng-controller="startCtrl">
+        <h1>留言板</h1>
+        <hr>
+            <div class="list-group">
+                <div class="list-group-item" ng-repeat="msg in messages">
+                    <h4 class="list-group-item-heading">用户：{{msg.txtUserName}} <a href="#" ng-click="deleteMsg(msg._id)" class="pull-right">删除</a></h4>
+                    <p class="list-group-item-text">留言：{{msg.txtMsg}}</p>
+                </div>
+            </div>
+        <ul class="pagination">
+            <li><a ng-click="getPages(0)" href="#">&laquo;</a></li>
+            <li class="pageNum"  ng-repeat="page in pages"><a ng-click="getPages(page)" href="#">{{ page+1 }}</a></li>
+            <li><a ng-click="getPages(pageCount)" href="#">&raquo;</a></li>
+        </ul>
+        <hr>
+        <div class="alert alert-success msgInfo">留言提交成功!</div>
+        <div class="alert alert-danger msgInfo">留言提交失败!</div>
+        <form role="form">
+            <div class="form-group">
+                <label for="txtUserName">姓名</label>
+                <input type="text" class="form-control" id="txtUserName" name="txtUserName" placeholder="姓名">
+            </div>
+            <div class="form-group">
+                <label for="txtMsg">留言</label>
+                <textarea id="txtMsg" name="txtMsg" rows="6" placeholder="请输入留言" class="form-control"></textarea>
+            </div>
+            <button type="button" id="btnSubmit" ng-click="btnSubmit()" class="btn btn-success">提 交</button>
+        </form>
+    </div>
+    <script src="/js/jquery-3.1.1.min.js"></script>
+    <script src="js/angular.js"></script>
+    <script src="js/angular-route.js"></script>
+    <script src="js/angular-animate.js"></script>
+<script>
+    angular.module('myModule',['ng','ngRoute']).controller('startCtrl',function($scope,$http,$timeout){
+        var pageSize = 5;
+        $scope.currentPage = 0;
+        /// /取得留言总数目
+        $http({
+            url:'getPageCount?pageSize=' + pageSize,
+            method:'get'
+        }).success(function(data){
+            //alert(data.pages);
+            $scope.pages = data.pages;
+            $scope.pageCount = data.pageCount;
+        }).error(function(data){
+
+        });
+
+        //取得留言数据
+        $http({
+            url:'page?pageNum=' + $scope.currentPage,
+            method:'get'
+        }).success(function(data,header,config,status){
+            $scope.messages = data.result;
+            $(".pageNum").eq(0).addClass("active");
+            //alert(data.result);
+        }).error(function(data,header,config,status){
+
+        });
+
+        $scope.getPages = function(pageNum){
+            $http({
+                url:'page?pageNum=' + pageNum,
+                method:'get'
+            }).success(function(data,header,config,status){
+                $scope.messages = data.result;
+                $scope.currentPage = pageNum;
+                $(".pageNum").removeClass("active").eq(pageNum).addClass("active");
+                //alert(data.result);
+            }).error(function(data,header,config,status){
+            });
+        }
+        $scope.deleteMsg = function( mId ){
+            $http({
+                url:'deleteDoc?id='+ mId ,
+                method:'get'
+            }).success(function(data,header,config,status){
+                $scope.getPages($scope.currentPage);
+            });
+        }
+
+        $scope.btnSubmit = function(){
+            $.post("/doPost",{
+                "txtUserName": $("#txtUserName").val(),
+                "txtMsg": $("#txtMsg").val()
+            },function(result){
+                if(result == 1){
+                    console.log($scope.currentPage);
+                    $scope.getPages($scope.currentPage);
+                    $(".alert-success").css("display","block");
+                    clearMsg();
+                }else{
+                    $(".alert-danger").css("display","block");
+                    clearMsg();
+                }
+                $timeout(function(){
+                    $(".msgInfo").css("display","none");
+                },3000);
+            });
+        }
+        function clearMsg(){
+            $("#txtUserName").val("");
+            $("#txtMsg").val("");
+        }
+    });
+</script>
+</body>
+</html>

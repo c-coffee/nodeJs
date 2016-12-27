@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="./css/bootstrap.css" rel="stylesheet">
+    <style>
+        .album{
+            float:left;
+            width:220px;
+            height:250px;
+            text-align:center;
+        }
+        .album img{
+            width:150px;
+            height:150px;
+        }
+        h1{
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>相册</h1>
+        <hr>
+        <% for( var i=0; i<albums.length; i++ ){%>
+        <div class="album">
+            <a href="./album/<%=albums[i] %>"><img src="./images/1.jpg" ></a>
+            <p><%=albums[i] %></p>
+        </div>
+        <%}%>
+    </div>
+</body>
+</html>
