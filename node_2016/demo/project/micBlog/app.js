@@ -3,13 +3,12 @@
  */
 var express = require("express");
 var app = express();
+var router = require("./router/router.js")
 
 //静态页面
 app.use(express.static("./public"));
 //路由表
 
-app.post('/doRegister',function(req,res){
-    
-});
+app.post('/doRegister',router.doRegister);
 
 app.listen(3000);
