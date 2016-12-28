@@ -8,4 +8,8 @@ var app = express();
 app.use(express.static("./public"));
 //路由表
 
+app.post('/doRegister',function(req,res){
+    
+});
+
 app.listen(3000);
