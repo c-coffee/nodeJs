@@ -8,6 +8,7 @@ var session = require("express-session");
 
 //静态页面
 app.use(express.static("./public"));
+app.use("/avatar",express.static("./avatar"));
 
 app.set('trust proxy', 1); // trust first proxy
 app.use(session({
@@ -20,4 +21,5 @@ app.use(session({
 
 app.post('/doRegister',router.doRegister);
 app.post('/doLogin',router.doLogin);
+app.post('/uploadPersonFile',router.uploadPseronFile);
 app.listen(3000);

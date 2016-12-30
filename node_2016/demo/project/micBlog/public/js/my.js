@@ -1,7 +1,7 @@
 /**
  * Created by vol on 2016/12/28.
  */
-angular.module("myModule",["ng","ngRoute","ngAnimate"])
+angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
     .controller('startCtrl',function($scope){
         $scope.isMain = true;
     })
@@ -121,6 +121,53 @@ angular.module("myModule",["ng","ngRoute","ngAnimate"])
             },3000);
         }
     })
+    .controller('setPersonalCtrl',function($scope,$http,FileUploader,$timeout){
+        $(".alert").fadeOut(0); //隐藏消息框
+        $scope.filePath = "/avatar/default.jpg";
+        //todo:页面访问权限判断
+        //图像上传
+        $scope.uploadStatus = $scope.uploadStatus1 = false; //定义两个上传后返回的状态，成功获失败
+        $scope.fileName = "请选择...";
+        var uploader = $scope.uploader = new FileUploader({
+            url: 'uploadPersonFile',
+            queueLimit: 1,     //文件个数
+            removeAfterUpload: true   //上传后删除文件
+        });
+        $scope.clearItems = function(){    //重新选择文件时，清空队列，达到覆盖文件的效果
+            uploader.clearQueue();
+        };
+        uploader.onAfterAddingFile = function(fileItem) {
+            $scope.fileItem = fileItem._file;    //添加文件之后，把文件信息赋给scope
+            $scope.fileName = $scope.fileItem.name;
+        };
+        uploader.onSuccessItem = function(fileItem, response, status, headers) {
+            $scope.uploadStatus = true;   //上传成功则把状态改为true
+            if(response.status == "-1"){
+                alertMsg("头像上传失败！");
+            }else if(response.status == "1"){
+                $scope.filePath = response.filePath;
+            }
+            console.info('onSuccessItem', fileItem, response, status, headers);
+        };
+
+        uploader.onErrorItem = function(fileItem, response, status, headers) {
+            console.info('onErrorItem', fileItem, response, status, headers);
+        };
+
+        $scope.uploadFile = function(){
+            //console.log("uploadAll");
+            uploader.uploadAll();
+        }
+
+        function alertMsg(message){
+            console.log(message);
+            $scope.msg = message;
+            $(".alert").fadeIn();
+            $timeout(function(){
+                $(".alert").fadeOut();
+            },3000);
+        }
+    })
     .config(function($routeProvider){
         $routeProvider
             .when('/',{
@@ -134,5 +181,9 @@ angular.module("myModule",["ng","ngRoute","ngAnimate"])
             .when('/login',{
                 templateUrl:'template/login.html',
                 controller:'loginCtrl'
+            })
+            .when('/setPersonal',{
+                templateUrl:'template/setPersonal.html',
+                controller:'setPersonalCtrl'
             })
     });

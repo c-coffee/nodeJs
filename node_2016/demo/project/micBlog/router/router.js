@@ -4,6 +4,8 @@
 var formidable = require("formidable");
 var db = require("../model/db.js");
 var md5 = require("../model/md5.js");
+var path = require("path");
+var fs = require("fs");
 //注册模块
 exports.doRegister = function(req,res){
     //得到用户填写的东西
@@ -62,5 +64,25 @@ exports.doLogin = function(req,res){
 
             res.send("1"); //登录成功
         })
+    });
+};
+//个人图像上传
+exports.uploadPseronFile = function(req,res){
+    var form = new formidable.IncomingForm();
+    form.uploadDir = path.normalize( __dirname + "/../avatar");
+    console.log(form.uploadDir);
+    form.parse(req,function(err,fields,files){
+        //console.log(files.file);
+        //console.log(fields);
+        if(err){
+            res.json({"status":"-1"});
+        }
+        var extraName = path.extname(files.file.name);
+        fs.renameSync(files.file.path,files.file.path + extraName);
+        var filePath = "/avatar/" + path.basename(files.file.path) + extraName;
+
+        //console.log(filePath);
+        //文件上传成功，则写入数据库，
+        res.json({"status":"1","filePath":filePath});
     });
 };

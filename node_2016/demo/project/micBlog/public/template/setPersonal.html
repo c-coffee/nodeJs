@@ -1,0 +1,19 @@
+<div ng-include="'/template/header.html'"></div>
+<div class="container">
+    <div class="jumbotron">
+        <div class="alert alert-success" id="divAlert"><button type="button" class="close" data-dismiss="alert"><span >&times;</span></button>{{msg}}</div>
+        <div class="row">
+            <div class="col-md-4">
+                <p>个人头像</p>
+                <form id="uploadForm" name="uploadForm" method="post" enctype="multipart/form-data">
+                    <img src="{{filePath}}" width="200" height="200"><br><br>
+                    <p>{{ fileName }}</p>
+                    <input type="file" id="f" name="uploadFile" ng-click="clearItems()" nv-file-select uploader="uploader" class="hidden">
+                    <button class="btn btn-default" onclick="f.click()">选择图片</button>
+                    <button class="btn btn-default" ng-click="uploadFile()">上传图片</button>
+                </form>
+            </div>
+            <div class="col-md-8"></div>
+        </div>
+    </div>
+</div>
