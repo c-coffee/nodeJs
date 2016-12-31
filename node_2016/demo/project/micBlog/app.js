@@ -22,4 +22,6 @@ app.use(session({
 app.post('/doRegister',router.doRegister);
 app.post('/doLogin',router.doLogin);
 app.post('/uploadPersonFile',router.uploadPseronFile);
+app.get('/checkLogin',router.checkLogin);  //检查是否登录
+app.post('/cropPic',router.cropPic);  //剪切图片
 app.listen(3000);

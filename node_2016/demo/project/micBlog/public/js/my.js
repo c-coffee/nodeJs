@@ -121,10 +121,52 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
             },3000);
         }
     })
-    .controller('setPersonalCtrl',function($scope,$http,FileUploader,$timeout){
+    .controller('setPersonalCtrl',function($scope,$http,$rootScope,FileUploader,$timeout,$location){
+        var cropInfo; //裁剪图形的区域信息
+        var jcrop_api;
+        var filePath;
+        //初始化剪切图片组件
+        function cropPicInit(){
+            var xSize = 400,
+                ySize = 400;
+            $('#target').Jcrop({
+                //bgFade:true,
+                //bgOpacity: .2,
+                //setSelect:[10,10,150,150],
+                onChange:updatePreview,
+                onSelect:updatePreview,
+                aspectRatio: xSize / ySize
+            },function(){
+                jcrop_api = this;
+                //jcrop_api.setSelect([10,10,150,150]);
+                console.log("ok");
+            });
+
+            function updatePreview(c){
+                cropInfo = c;
+                //console.log(c);
+            }
+        }
+        cropPicInit();
+
         $(".alert").fadeOut(0); //隐藏消息框
+
         $scope.filePath = "/avatar/default.jpg";
-        //todo:页面访问权限判断
+        //页面访问权限判断
+        $http({
+            url:"checkLogin?"+ Math.random().toString(),
+            method:"get"
+        }).success(function(result){
+            if(result.status == "-1"){
+                $rootScope.userName = "";
+                $rootScope.login = false;
+                alertMsg("请先登录！即将返回登录页面...");
+                $timeout(function(){
+                    $location.path('/login');
+                },3000);
+
+            }
+        });
         //图像上传
         $scope.uploadStatus = $scope.uploadStatus1 = false; //定义两个上传后返回的状态，成功获失败
         $scope.fileName = "请选择...";
@@ -141,30 +183,67 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
             $scope.fileName = $scope.fileItem.name;
         };
         uploader.onSuccessItem = function(fileItem, response, status, headers) {
+            console.log(response);
+
             $scope.uploadStatus = true;   //上传成功则把状态改为true
             if(response.status == "-1"){
                 alertMsg("头像上传失败！");
             }else if(response.status == "1"){
-                $scope.filePath = response.filePath;
-            }
-            console.info('onSuccessItem', fileItem, response, status, headers);
-        };
+                //$scope.upLoadPic = "/avatar/default.jpg";
+                //console.log(response.filePath);
+                var picWidth = response.width + 40;
+                var picHeight = response.height + 20;
+                filePath = response.filePath;
+                $("#modifyPicModal .modal-dialog").css("width",picWidth);
+                $("#modifyPicModal .modal-dialog").css("height",picHeight);
 
+                //设置剪裁界面显示的图片
+                jcrop_api.setImage(filePath);
+                //弹出剪切图片模式窗口
+                $('#modifyPicModal').modal();
+
+            }
+            //console.info('onSuccessItem', fileItem, response, status, headers);
+        };
         uploader.onErrorItem = function(fileItem, response, status, headers) {
             console.info('onErrorItem', fileItem, response, status, headers);
         };
-
+        //上传图像
         $scope.uploadFile = function(){
             //console.log("uploadAll");
             uploader.uploadAll();
-        }
+        };
+        //剪切图形
+        $scope.cropPic = function(){
+            console.log(cropInfo);
+            if(!cropInfo){
+                $("#cropAlert").html("请选择剪切区域！").fadeIn();
+                $timeout(function(){
+                    $("#cropAlert").fadeOut();
+                },3000);
+                return;
+            }
+            $http({
+                url:"cropPic",
+                method:"post",
+                data:{"filePath":filePath,"cropInfo":cropInfo}
+            }).success(function(result){
+                console.log(result);
+                $('#modifyPicModal').modal('hide');
+                if(result == "-1"){
+                    alertMsg("图片上传失败！请重新尝试");
+                }else if(result == "1"){
+                    $scope.filePath = filePath + "?" + Math.random().toString();
+                }
+            });
+        };
+
 
         function alertMsg(message){
-            console.log(message);
             $scope.msg = message;
-            $(".alert").fadeIn();
+            $("#divAlert").fadeIn();
             $timeout(function(){
-                $(".alert").fadeOut();
+                $("#divAlert").fadeOut();
             },3000);
         }
     })
