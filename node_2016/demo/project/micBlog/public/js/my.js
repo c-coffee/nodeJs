@@ -2,8 +2,92 @@
  * Created by vol on 2016/12/28.
  */
 angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
-    .controller('startCtrl',function($scope){
-        $scope.isMain = true;
+    .controller('startCtrl',function($scope,$rootScope,$http,$timeout,$location){
+        $(".alert").fadeOut(0); //隐藏消息框
+        $scope.isMain = true;  //设置导航条激活
+        console.log(sessionStorage.login);
+        if(sessionStorage.login){
+            $rootScope.userName = sessionStorage.userName;
+            $rootScope.login = sessionStorage.login;
+            $rootScope.avatar = sessionStorage.avatar;
+        }else{
+            $rootScope.login = false;
+
+        }
+        console.log($rootScope.login);
+
+        $scope.doLogin = function(){
+            var userName = $('#txtUser').val();
+            var userPwd = $('#txtPwd').val();
+
+            if(userName == "" || userPwd == ""){
+                alertMsg("请输入完整信息！");
+                return;
+            }
+            $http({
+                url:'doLogin',
+                method:'post',
+                data:{
+                    "userName":userName,
+                    "userPwd":userPwd
+                }
+            }).success(function(data){
+                //console.log(data);
+                switch(data.result.toString()){
+                    case "1":
+                        sessionStorage.login = true;
+                        sessionStorage.userName = userName;
+                        sessionStorage.avatar = data.avatar;
+                        $rootScope.userName = userName;
+                        $rootScope.login = true;
+                        $rootScope.avatar = data.avatar;
+                        $location.path('/');
+
+                        //console.log($rootScope.userName + " " + $rootScope.login);
+                        //alertMsg("注册成功！请您登录!");
+                        break;
+                    case "-3":
+                        alertMsg("服务器内部错误！");
+                        break;
+                    case "-2":
+                        alertMsg("数据库错误！");
+                        break;
+                    case "-1":
+                        alertMsg("用户名密码错误！");
+                        break;
+                }
+            }).error(function(err){
+                console.log(err);
+            });
+        };
+
+        $scope.submitContent = function(){
+            //获取用户填写的内容
+            var content = $("#txtContent").val();
+            console.log("content", content);
+            if(content == ""){
+                alertMsg("请输入说说内容！");
+                $("txtContent").focus();
+                return;
+            }
+            $http({
+                url:"saveContent",
+                method:"post",
+                data:{"content":content}
+            }).success(function(result){
+                //刷新界面，提示发言成功
+            })
+        };
+
+        function alertMsg(message){
+            console.log(message);
+            $scope.msg = message;
+            $(".alert").fadeIn();
+            $timeout(function(){
+                $(".alert").fadeOut();
+            },3000);
+        }
+
     })
     .controller('registerCtrl',function($scope,$http,$timeout,$rootScope){
         $(".alert").fadeOut(0);
@@ -86,9 +170,12 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
                 }
             }).success(function(data){
                 //console.log(data);
-                switch(data.toString()){
+                switch(data.result.toString()){
                     case "1":
                         alertMsg("登录成功！3秒自动回到首页...");
+                        sessionStorage.login = true;
+                        sessionStorage.userName = userName;
+                        sessionStorage.avatar = avatar;
                         $rootScope.userName = userName;
                         $rootScope.login = true;
                         $timeout(function(){
@@ -160,11 +247,16 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
             if(result.status == "-1"){
                 $rootScope.userName = "";
                 $rootScope.login = false;
+                sessionStorage.login = false;
+                sessionStorage.removeItem("userName");
+                sessionStorage.removeItem("avatar");
                 alertMsg("请先登录！即将返回登录页面...");
                 $timeout(function(){
                     $location.path('/login');
                 },3000);
-
+            }else{
+                $rootScope.userName = sessionStorage.userName = result.userName;
+                $rootScope.login = sessionStorage.login = true;
             }
         });
         //图像上传

@@ -11,14 +11,14 @@
         <div class="collapse navbar-collapse" id="nb-collapse-1">
             <ul class="nav navbar-nav">
                 <li ng-class="{true:'active',false:'inactive'}[isMain]"><a href="#/">全部说说</a></li>
-                <li><a href="#">我的说说</a></li>
+                <li><a href="/#">我的说说</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right" ng-if="!$root.login">
                 <li ng-class="{true:'active',false:'inactive'}[isRegister]"><a href="#register">注册</a></li>
                 <li ng-class="{true:'active',false:'inactive'}[isLogin]"><a href="#login">登录</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right" ng-if="$root.login">
-                <li><a href="#">欢迎：{{$root.userName}}</a></li>
+                <li><a >欢迎：{{$root.userName}}</a></li>
                 <li><a href="#setPersonal">修改个人信息</a></li>
             </ul>
         </div>

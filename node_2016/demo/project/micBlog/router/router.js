@@ -54,17 +54,17 @@ exports.doLogin = function(req,res){
         db.find("users",{"userName":userName,"password":password},function(err,result){
             if(err){
                 console.log("login" + err);
-                res.send("-3"); //服务器错误
+                res.json({"result":"-3"}); //服务器错误
                 return;
             }
             if(result.length == 0 ){
-                res.send("-1"); //用户名密码错误。
+                res.send({"result":"-1"}); //用户名密码错误。
                 return;
             }
             req.session.login = "1";
             req.session.userName = userName;
 
-            res.send("1"); //登录成功
+            res.json({"result":"1","userName":userName,"avatar":result[0].avatar}); //登录成功
         })
     });
 };
@@ -132,4 +132,8 @@ exports.cropPic = function(req,res){
                 res.send("1"); // 图片剪裁成功
             });
     });
+};
+//存储用户发表的说说
+exports.saveContent = function(req,res){
+    //todo 验证用户是否登录，保存用户输入的内容
 };

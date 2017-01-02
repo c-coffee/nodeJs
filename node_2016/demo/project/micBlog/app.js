@@ -19,9 +19,10 @@ app.use(session({
 
 //路由表
 
-app.post('/doRegister',router.doRegister);
-app.post('/doLogin',router.doLogin);
-app.post('/uploadPersonFile',router.uploadPseronFile);
+app.post('/doRegister',router.doRegister); //用户注册
+app.post('/doLogin',router.doLogin); //用户登录
+app.post('/uploadPersonFile',router.uploadPseronFile);//上传用户头像
 app.get('/checkLogin',router.checkLogin);  //检查是否登录
 app.post('/cropPic',router.cropPic);  //剪切图片
+app.post('/saveContent',router.saveContent); //保存用户说说
 app.listen(3000);

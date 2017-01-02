@@ -1,4 +1,52 @@
 <div ng-include="'template/header.html'"></div>
 <div class="container">
-    说说
+    <div class="jumbotron">
+        <div class="alert alert-success" id="divAlert"><button type="button" class="close" data-dismiss="alert"><span >&times;</span></button>{{msg}}</div>
+        <div class="row" ng-if="!$root.login">
+            <div class="col-lg-6">
+                <h1>欢迎！</h1>
+                <p>说说是我们校内交流平台，欢迎注册！</p>
+                <p><a class="btn btn-primary btn-lg" href="#" role="button">注册</a></p>
+            </div>
+            <div class="col-lg-6">
+                <h3 class="text-center">登录</h3>
+
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="txtUser" class="col-sm-2 control-label">用户名</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" id="txtUser" placeholder="请输入用户名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="txtPwd" class="col-sm-2 control-label">密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" id="txtPwd" placeholder="请输入密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="button" ng-click="doLogin()" class="btn btn-success">登录</button>
+                            <button type="reset" class="btn btn-default">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row" ng-if="$root.login">
+            <div class="col-md-3">
+                <img ng-src="/avatar/{{$root.avatar}}" width="200" height="200">
+            </div>
+            <div class="col-md-8">
+                <form>
+                    <div class="form-group">
+                        {{$root.login}}
+                        <label for="txtContent">{{$root.userName}}</label>
+                        <textarea id="txtContent" rows="5" class="form-control"></textarea>
+                    </div>
+                    <button ng-click="submitContent" class="btn btn-success pull-right">发表说说</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
