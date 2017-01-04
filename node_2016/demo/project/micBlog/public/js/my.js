@@ -5,14 +5,15 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
     .controller('startCtrl',function($scope,$rootScope,$http,$timeout,$location){
         $(".alert").fadeOut(0); //隐藏消息框
         $scope.isMain = true;  //设置导航条激活
-        console.log(sessionStorage.login);
-        if(sessionStorage.login){
+
+        if(sessionStorage.login == "true"){
             $rootScope.userName = sessionStorage.userName;
             $rootScope.login = sessionStorage.login;
             $rootScope.avatar = sessionStorage.avatar;
+            //console.log($rootScope.login)
         }else{
             $rootScope.login = false;
-
+            //console.log($rootScope.login)
         }
         console.log($rootScope.login);
 
@@ -73,11 +74,49 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
             $http({
                 url:"saveContent",
                 method:"post",
+                cache:false,
                 data:{"content":content}
-            }).success(function(result){
-                //刷新界面，提示发言成功
+            }).success(function(data){
+                if(data.result.toString() == "1"){
+                    alertMsg("发表成功！");
+                    $("#txtContent").val("");
+                }else{
+                    alertMsg("发表失败，请重新输入！错误码：" + data.result.toString());
+                }
             })
         };
+
+        showList(0);
+        function showList(pageNum){
+            $http({
+                url:"showList?pageNum=" + pageNum,
+                method:"get"
+            }).success(function(result){
+                console.log(result);
+                if(result.r == 1){
+                    (function getAvatar(num){
+                        console.log(num);
+                        if(num >= result.result.length){
+                            $scope.blogs = result.result;
+
+                            return;
+                        }else{
+                            $http({
+                                url:"getAvatar?username=" + result.result[num].userName,
+                                method:"get"
+                            }).success(function(result2){
+                                console.log(result2);
+                                result.result[num].avatar = result2.avatar;
+                                getAvatar(++num);
+                            })
+                        }
+                    })(0);
+
+
+                }
+                //console.log(result);
+            })
+        }
 
         function alertMsg(message){
             console.log(message);
@@ -109,6 +148,7 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
             $http({
                 url:'doRegister',
                 method:'post',
+                cache:false,
                 data:{
                     "userName":userName,
                     "userPwd":userPwd
@@ -164,18 +204,19 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
             $http({
                 url:'doLogin',
                 method:'post',
+                cache:false,
                 data:{
                     "userName":userName,
                     "userPwd":userPwd
                 }
             }).success(function(data){
-                //console.log(data);
+                console.log(data);
                 switch(data.result.toString()){
                     case "1":
                         alertMsg("登录成功！3秒自动回到首页...");
                         sessionStorage.login = true;
                         sessionStorage.userName = userName;
-                        sessionStorage.avatar = avatar;
+                        sessionStorage.avatar = data.avatar;
                         $rootScope.userName = userName;
                         $rootScope.login = true;
                         $timeout(function(){
@@ -242,6 +283,7 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
         //页面访问权限判断
         $http({
             url:"checkLogin?"+ Math.random().toString(),
+            cache:false,
             method:"get"
         }).success(function(result){
             if(result.status == "-1"){
@@ -322,9 +364,10 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
             }).success(function(result){
                 console.log(result);
                 $('#modifyPicModal').modal('hide');
-                if(result == "-1"){
+                if(result.r == "-1"){
                     alertMsg("图片上传失败！请重新尝试");
-                }else if(result == "1"){
+                }else if(result.r == "1"){
+                    sessionStorage.avatar = result.avatar;
                     $scope.filePath = filePath + "?" + Math.random().toString();
                 }
             });
@@ -342,8 +385,9 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
     .config(function($routeProvider){
         $routeProvider
             .when('/',{
-                templateUrl:'template/main.html',
-                controller:'startCtrl'
+                templateUrl:'template/main.html?aa' + Math.random(),
+                controller:'startCtrl',
+                cache:false
             })
             .when('/register',{
                 templateUrl:'template/register.html',

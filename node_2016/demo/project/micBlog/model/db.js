@@ -3,7 +3,7 @@
  */
 //封装数据库的常用操作
 var mongoDB = require("mongodb").MongoClient;
-var settings = require("../settings.js")
+var settings = require("../settings.js");
 //连接数据库
 
 function _connectDB(callback){
