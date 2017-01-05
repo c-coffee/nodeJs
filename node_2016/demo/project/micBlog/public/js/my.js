@@ -80,12 +80,14 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
                 if(data.result.toString() == "1"){
                     alertMsg("发表成功！");
                     $("#txtContent").val("");
+                    showList(0);
                 }else{
                     alertMsg("发表失败，请重新输入！错误码：" + data.result.toString());
                 }
             })
         };
 
+        //展示说说内容
         showList(0);
         function showList(pageNum){
             $http({
@@ -98,11 +100,10 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
                         console.log(num);
                         if(num >= result.result.length){
                             $scope.blogs = result.result;
-
                             return;
                         }else{
                             $http({
-                                url:"getAvatar?username=" + result.result[num].userName,
+                                url:"getAvatar?userName=" + result.result[num].userName,
                                 method:"get"
                             }).success(function(result2){
                                 console.log(result2);
@@ -219,6 +220,7 @@ angular.module("myModule",["ng","ngRoute","ngAnimate","angularFileUpload"])
                         sessionStorage.avatar = data.avatar;
                         $rootScope.userName = userName;
                         $rootScope.login = true;
+                        $rootScope.avatar = data.avatar;
                         $timeout(function(){
                             $location.path('/');
                         },3000);

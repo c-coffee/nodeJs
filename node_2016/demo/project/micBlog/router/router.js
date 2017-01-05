@@ -184,7 +184,9 @@ exports.showList = function(req,res){
 //获取用户头像
 exports.getAvatar = function(req,res){
     var userName = req.query.userName;
-    db.find("users",{"username":userName},function(err,result){
+    console.log(userName);
+    db.find("users",{"userName":userName},function(err,result){
+        console.log(result);
         if(!err){
             res.json({"avatar":result[0].avatar});
         }
