@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>哇哈哈聊天室</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <style>
+        .input-group-addon{
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <ul id="chatContent"> </ul>
+</div>
+<div class="navbar-fixed-bottom alert alert-danger">
+    <div class="input-group">
+        <div class="input-group-btn dropup">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">所有人 <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                <li><a href="#">所有人</a></li>
+                <li class="divider"></li>
+                <li><a href="#">小花</a></li>
+                <li><a href="#">阿牛</a></li>
+                <li><a href="#">小强</a></li>
+            </ul>
+        </div><!-- /btn-group -->
+        <input type="text" class="form-control">
+        <span class="input-group-addon btn btn-primary" id="btnSubmit">提交</span>
+    </div><!-- /input-group -->
+</div>
+<script src="js/jquery-3.1.1.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io();
+    socket.on('news', function (data) {
+        console.log(data);
+        socket.emit('test', { my: 'data' });
+    });
+</script>
+</body>
+</html>
